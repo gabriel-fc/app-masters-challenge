@@ -15,36 +15,50 @@ function App() {
   const apiURL = "https://games-test-api-81e9fb0d564a.herokuapp.com/api/data"
   const devMail = "insert_email@here.com"
 
-  useEffect(()=>{
-    if((statusCode > 199 && statusCode < 300 ) || statusCode == 0) setErrorMessage("")
-    else if(statusCode > 499) setErrorMessage("O servidor fahou em responder, tente recarregar a página")
+  useEffect(() => {
+    if ((statusCode > 199 && statusCode < 300) || statusCode == 0) setErrorMessage("")
+    else if (statusCode > 499) setErrorMessage("O servidor fahou em responder, tente recarregar a página")
     else setErrorMessage("O servidor não conseguirá responder por agora, tente voltar novamente mais tarde")
   }, [statusCode])
 
 
   function requestGames() {
-    setIsLoading(true)
-    console.log("teste request")
-    fetch(apiURL, {
+    setIsLoading(true);
+
+    const timeoutPromise = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        reject(new Error('Request timed out'));
+      }, 5000);
+    });
+
+    const fetchPromise = fetch(apiURL, {
       method: "GET",
       headers: {
         "dev-email-address": devMail
       }
     })
       .then(response => {
-        setStatusCode(response.status)
-        return response.json()
+        setStatusCode(response.status);
+        return response.json();
       })
       .then(data => {
-        setIsLoading(false)
-        setGames(data)
-        console.log("response:" + data)
+        setIsLoading(false);
+        setGames(data);
+        console.log("response:" + data);
       })
       .catch(error => {
-        setIsLoading(false)
-        setGames({})
-        console.log("data error after api request: " + error.message)
-      })
+        setIsLoading(false);
+        setGames({});
+        console.log("data error after api request: " + error.message);
+      });
+
+    Promise.race([timeoutPromise, fetchPromise])
+      .catch(error => {
+        setIsLoading(false);
+        setStatusCode(408);
+        setGames({});
+        console.log("Timeout error: " + error.message);
+      });
   }
 
 
@@ -53,7 +67,7 @@ function App() {
       {isLoading ?
         <Loader /> : (statusCode > 199 && statusCode < 300) ?
           <GamesGrid games={games} /> :
-          <RequestArea statusCode={statusCode} onClickFunc = {requestGames}/>
+          <RequestArea statusCode={statusCode} onClickFunc={requestGames} />
       }
     </>
   )
