@@ -11,5 +11,11 @@
 }
 
 .grid{
-    padding-top: 10px;;
+    padding-top: 50px;
+    min-height: 100vh;
+    align-self: flex-start;
+}
+
+.searchBar{
+    align-self:flex-start;
 }

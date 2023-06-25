@@ -12,6 +12,6 @@ export default (props) => {
 
 function alertComponent(statusCode){
     if(statusCode == 0 || statusCode > 199 && statusCode < 299) return null
-    if(statusCode > 499) return (<Alert className='child-3' severity="error">O servidor falhou em responder, tente recarregar a página</Alert>)
-    else return (<Alert className='child-3' severity="error">O servidor não conseguirá responder por agora, tente voltar novamente mais tarde</Alert>)
+    if(statusCode > 499) return (<Alert severity="error">O servidor falhou em responder, tente recarregar a página</Alert>)
+    else return (<Alert severity="error">O servidor não conseguirá responder por agora, tente voltar novamente mais tarde</Alert>)
 }
